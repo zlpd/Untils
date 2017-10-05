@@ -1,0 +1,113 @@
+import java.util.ArrayList;
+
+/**
+ * Created by Jirachi on 2017/9/9.
+ */
+public class Main {
+    private static ArrayList<ArrayList<String>> permuteResult;
+    private static ArrayList<ArrayList<String>> combineResult;
+
+    public static void main(String[] args){
+        String[] array={"5","4","2","6","8","3"};
+
+        int permuteStart=2,permuteEnd=array.length-1;
+        System.out.println("this is permute: from "+(array.length-1-permuteStart)+" get "+(array.length-1-permuteStart)+" number: "+permuteNumber((array.length-1-permuteStart),(array.length-1-permuteStart)));
+        System.out.println("this is permuteResult: start "+permuteStart+" end "+(permuteEnd-1));
+        permuteResult =new ArrayList<ArrayList<String>> ();
+        permute(array,permuteStart,permuteEnd);
+        for(int i = 0; i< permuteResult.size(); ++i){
+            ArrayList<String> tempArr= permuteResult.get(i);
+            System.out.println(tempArr.toString());
+        }
+
+        int combineBegin=2,combineNumber=3;
+        System.out.println("this is combine: from "+(array.length-combineBegin)+" get "+combineNumber+" number: "+combineNumber(combineNumber,array.length-combineBegin));
+        System.out.println("this is combineResult: begin "+combineBegin+" number "+combineNumber);
+        combineResult =new ArrayList<ArrayList<String>> ();
+        ArrayList<String> list=new ArrayList<String>();
+        combine(array,combineBegin,combineNumber,list);
+        for(int i = 0; i< combineResult.size(); ++i){
+            ArrayList<String> tempArr= combineResult.get(i);
+            System.out.println(tempArr.toString());
+        }
+    }
+
+    //排列函数:数组元素类型为String，排列的起始位置为start，终止位置为end(不包含在内)（都指的是数组的下标）。即从数组下标start到（end-1）进行全排列
+    public static void permute(String[] paraArr, int start, int end) {
+        if(start == end-1){
+            ArrayList<String> tempArr=new ArrayList<String>();
+            for(int i=0; i<paraArr.length; ++i)
+                tempArr.add(paraArr[i]);
+            permuteResult.add(tempArr);
+            return;
+        }
+        for(int i=start; i<end; i++){
+            String temp = paraArr[start];
+            paraArr[start] = paraArr[i];
+            paraArr[i] = temp;
+            permute(paraArr, start+1, end);
+            temp = paraArr[start];
+            paraArr[start] = paraArr[i];
+            paraArr[i] = temp;
+        }
+    }
+
+    //从m个元素中选出n个元素的排列个数
+    public static long permuteNumber(int n,int m){
+        long numerator=1;
+        for(int i=m;i>m-n;--i){
+            numerator*=i;
+        }
+
+        return numerator;
+    }
+
+
+
+    //组合函数:数组元素类型为String，组合的起始位置为begin（指的是数组的下标），组合长度为number。即从数组下标为begin开始挑选number个元素的所有组合
+    public static void combine(String[] paraArr,int begin,int number,ArrayList<String> list){
+        if(number==0){
+            combineResult.add((ArrayList<String>)list.clone());
+            return ;
+        }
+        if(begin==paraArr.length){
+            return;
+        }
+        list.add(paraArr[begin]);
+        combine(paraArr,begin+1,number-1,list);
+        list.remove(paraArr[begin]);
+        combine(paraArr,begin+1,number,list);
+    }
+
+    //从m个元素中选出n个元素的组合个数
+    public static long combineNumber(int n,int m){
+        long numerator=permuteNumber(n,m);
+
+        long denominator=1;
+        for(int i=n;i>1;--i){
+            denominator*=i;
+        }
+
+        return numerator/denominator;
+    }
+}
+
+
+//运行结果如下：
+/*
+this is permute: from 3 get 3 number: 6
+this is permuteResult: start 2 end 4
+[5, 4, 2, 6, 8, 3]
+[5, 4, 2, 8, 6, 3]
+[5, 4, 6, 2, 8, 3]
+[5, 4, 6, 8, 2, 3]
+[5, 4, 8, 6, 2, 3]
+[5, 4, 8, 2, 6, 3]
+this is combine: from 4 get 3 number: 4
+this is combineResult: begin 2 number 3
+[2, 6, 8]
+[2, 6, 3]
+[2, 8, 3]
+[6, 8, 3]
+
+*/
